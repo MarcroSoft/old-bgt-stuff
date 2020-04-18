@@ -1,0 +1,200 @@
+//a mini sidescroller using the sound_pool class
+
+#include "sound_pool.bgt"
+
+sound_pool sound_environment;
+timer walk_timer;
+timer jump_timer;
+bool jumping;
+uint pos;
+int dir;
+uint[] board(boundary+1);
+int distance;
+const int left=-1;
+const int right=1;
+
+const uint boundary=50;
+hb[] health;
+class hb
+{
+bool active;
+int health;
+uint position;
+sound loop;
+sound getsound;
+sound destroysound;
+timer time;
+hb()
+{
+active=true;
+time.pause();
+health=random(1, 25);
+do
+{
+position=random(0, boundary);
+}
+while(board[position]==2);
+loop.load("sounds/objlocator.wav");
+getsound.load("sounds/objget.wav");
+destroysound.load("sounds/destroy.wav");
+position_sound_1d(loop, pos, position, 4, 2);
+loop.play_looped();
+}
+void update()
+{
+position_sound_1d(loop, pos, position, 4, 2);
+position_sound_1d(getsound, pos, position, 4, 2);
+position_sound_1d(destroysound, pos, position, 4, 2);
+if(pos==position&&jumping==false) get();
+}
+
+void get()
+{
+if(active)
+{
+loop.stop();
+getsound.play();
+active=false;
+time.restart();
+}
+}
+void destroy()
+{
+if(active)
+{
+loop.stop();
+destroysound.play();
+active=false;
+time.restart();
+}
+}
+}
+
+void main()
+{
+show_game_window("Side Scroller Test");
+sound_environment.max_distance=10;
+sound_environment.play_stationary("sounds/bagground.wav", true);
+uint pit1=random(2, boundary-25);
+uint pit2=random(boundary-20, boundary-5);
+for(uint x=0; x<board.length(); x++)
+{
+board[x]=0;
+}
+board[pit1-2]=1;
+board[pit1-1]=1;
+board[pit1]=2;
+board[pit1+1]=2;
+board[pit1+2]=1;
+board[pit1+3]=1;
+board[pit2-2]=1;
+board[pit2-1]=1;
+board[pit2]=2;
+board[pit2+1]=2;
+board[pit2+2]=1;
+board[pit2+3]=1;
+health.resize(5);
+while(true)
+{
+check_input();
+for(uint x=0; x<health.length(); x++)
+{
+if(health[x].time.running&&health[x].time.elapsed>2000) health.remove_at(x);
+}
+if(health.length()==0) exit();
+if(board[pos]==2&&jumping==false) drown();
+wait(5);
+}
+}
+
+void check_input()
+{
+if((key_down(KEY_LMENU))&&(key_pressed(KEY_F4))) exit();
+if(jumping)
+{
+if(key_pressed(KEY_LEFT)) jumpstep(left);
+if(key_pressed(KEY_RIGHT)) jumpstep(right);
+if(jump_timer.elapsed>1000)
+{
+jumping=false;
+sound_environment.play_stationary("sounds/land.wav", false);
+for(uint x=0; x<health.length(); x++)
+{
+health[x].update();
+}
+}
+}
+else
+{
+if(key_down(KEY_LEFT))
+{
+walk(left);
+}
+if(key_down(KEY_RIGHT))
+{
+walk(right);
+}
+if(key_pressed(KEY_UP)) jump();
+}
+if(key_pressed(KEY_LCONTROL)) fire();
+}
+
+void walk(int direction)
+{
+if((direction<=left)&&(pos<=0)) return;
+if((direction>=right)&&(pos>=boundary)) return;
+if(walk_timer.elapsed<350&&key_down(KEY_SPACE)==false) return;
+if(walk_timer.elapsed<250&&key_down(KEY_SPACE)) return;
+walk_timer.restart();
+pos+=direction;
+sound_environment.play_stationary("sounds/step/"+board[pos]+"/"+random(1, 3)+".wav", false);
+dir=direction;
+for(uint x=0; x<health.length(); x++)
+{
+health[x].update();
+}
+
+}
+void jump()
+{
+jump_timer.restart();
+sound_environment.play_stationary("sounds/jump.wav", false);
+jumping=true;
+}
+void jumpstep(int direction)
+{
+if((direction<=left)&&(pos<=0)) return;
+if((direction>=right)&&(pos>=boundary)) return;
+pos+=direction;
+dir=direction;
+for(uint x=0; x<health.length(); x++)
+{
+health[x].update();
+}
+
+}
+void fire(){
+sound_environment.play_stationary("sounds/gun.wav", false);
+for(uint x=0; x<health.length(); x++)
+{
+distance=health[x].position-pos;
+if(dir==right)
+{
+if(distance<4&&distance>=0) health[x].destroy();
+}
+else
+{
+if(distance>-4&&distance<=0) health[x].destroy();
+}
+
+}
+}
+
+void drown()
+{
+health.resize(0);
+sound_environment.destroy_all();
+sound_environment.play_stationary("sounds/drown.wav", false);
+wait(5000);
+exit();
+}

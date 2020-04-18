@@ -1,0 +1,329 @@
+// The Cube
+
+// the variables
+
+int x=1;
+int y=1;
+int z=1;
+int air=0;
+int stepnumber;
+int swimnumber;
+int mudnumber;
+int flynumber;
+int topnumber;
+
+// the sounds in the game
+
+sound wall,wind,land,water,mudland;
+sound[] step(4);
+sound[] swim(5);
+sound[] fly(4);
+sound[] top(4);
+sound[] mud(4);
+
+void main()
+{
+// the sounds are loaded
+
+wall.load("sounds/wall.wav");
+wind.load("sounds/wind.wav");
+land.load("sounds/land.wav");
+water.load("sounds/water.wav");
+mudland.load("sounds/mudland.wav");
+
+// Step sounds
+step[0].load("sounds/step1.wav");
+step[1].load("sounds/step2.wav");
+step[2].load("sounds/step3.wav");
+step[3].load("sounds/step4.wav");
+
+// Mud sounds
+mud[0].load("sounds/mud1.wav");
+mud[1].load("sounds/mud2.wav");
+mud[2].load("sounds/mud3.wav");
+mud[3].load("sounds/mud4.wav");
+
+// Swim sounds
+swim[0].load("sounds/swim1.wav");
+swim[1].load("sounds/swim2.wav");
+swim[2].load("sounds/swim3.wav");
+swim[3].load("sounds/swim4.wav");
+swim[4].load("sounds/swim5.wav");
+
+// Fly sounds
+fly[0].load("sounds/fly1.wav");
+fly[1].load("sounds/fly2.wav");
+fly[2].load("sounds/fly3.wav");
+fly[3].load("sounds/fly4.wav");
+
+// Top sounds
+top[0].load("sounds/top1.wav");
+top[1].load("sounds/top2.wav");
+top[2].load("sounds/top3.wav");
+top[3].load("sounds/top4.wav");
+
+wind.play_looped();
+
+// the window title
+
+show_game_window("The Cubic Beach!");
+while(true)
+{
+
+// the keys
+
+if(key_pressed(KEY_LEFT)) left();
+if(key_pressed(KEY_RIGHT)) right();
+if(key_pressed(KEY_UP)) forward();
+if(key_pressed(KEY_DOWN)) backward();
+if(key_pressed(KEY_PRIOR)) up();
+if(key_pressed(KEY_NEXT)) down();
+if(key_pressed(KEY_1)) one();
+if(key_pressed(KEY_2)) two();
+if(key_pressed(KEY_3)) three();
+if(key_pressed(KEY_4)) four();
+if(key_pressed(KEY_5)) five();
+if(key_pressed(KEY_6)) six();
+if(key_pressed(KEY_7)) seven();
+if(key_pressed(KEY_8)) eight();
+if(key_pressed(KEY_ESCAPE)) exitgame();}
+wait(10);
+}
+
+void right()
+{
+x++;
+check();
+}
+
+void left()
+{
+x--;
+check();
+}
+
+void forward()
+{
+y++;
+check();
+}
+
+void backward()
+{
+y--;
+check();
+}
+
+void up()
+{
+z++;
+air=1;
+check();
+}
+
+void down()
+{
+if(z>1)
+{
+z--;
+check();
+}
+}
+
+// numbers
+
+void one()
+{
+y=1;
+x=1;
+z=1;
+check();
+}
+
+void two()
+{
+y=1;
+x=22;
+z=1;
+check();
+}
+
+void three()
+{
+y=22;
+x=1;
+z=1;
+check();
+}
+
+void four()
+{
+y=22;
+x=22;
+z=1;
+check();
+}
+
+void five()
+{
+y=1;
+x=1;
+z=22;
+air=1;
+check();
+}
+
+void six()
+{
+y=1;
+x=22;
+z=22;
+air=1;
+check();
+}
+
+void seven()
+{
+y=22;
+x=1;
+z=22;
+air=1;
+check();
+}
+
+void eight()
+{
+y=22;
+x=22;
+z=22;
+air=1;
+check();
+}
+
+// end of numbers
+
+// check
+
+void check()
+{
+if(x>0 and x<11 and y>0 and y<23 and z==1)
+{
+if (air==0)
+{
+stepnumber=random(0, 3);
+step[stepnumber].stop();
+step[stepnumber].play();
+}
+else if(air>0)
+{
+land.stop();
+land.play();
+air=0;
+}
+}
+if(x>10 and x<13 and y>0 and y<23 and z==1)
+{
+if (air==0)
+{
+mudnumber=random(0, 3);
+mud[mudnumber].stop();
+mud[mudnumber].play();
+}
+else if(air>0)
+{
+mudland.stop();
+mudland.play();
+air=0;
+}
+}
+if(x>12 and x<23 and y>0 and y<23 and z==1)
+{
+if (air==0)
+{
+swimnumber=random(0, 4);
+swim[swimnumber].stop();
+swim[swimnumber].play();
+}
+else if(air>0)
+{
+water.stop();
+water.play();
+air=0;
+}
+}
+if(z>1 and z<23)
+{
+flynumber=random(0, 3);
+fly[flynumber].stop();
+fly[flynumber].play();
+air=1;
+}
+if(y==0)
+{
+fly[flynumber].stop();
+step[stepnumber].stop();
+swim[swimnumber].stop();
+wall.stop();
+wall.play();
+y++;
+}
+if(y==23)
+{
+fly[flynumber].stop();
+step[stepnumber].stop();
+swim[swimnumber].stop();
+wall.stop();
+wall.play();
+y--;
+}
+if(x==0)
+{
+fly[flynumber].stop();
+step[stepnumber].stop();
+wall.stop();
+wall.play();
+x++;
+}
+if(x==23)
+{
+fly[flynumber].stop();
+swim[swimnumber].stop();
+wall.stop();
+wall.play();
+x--;
+}
+if(z==0 and x>0 and x<11 and y>0 and y<23)
+{
+step[stepnumber].stop();
+land.stop();
+land.play();
+z++;
+}
+if(z==0 and x>10 and x<13 and y>0 and y<23)
+{
+mud[mudnumber].stop();
+mudland.stop();
+mudland.play();
+z++;
+}
+if(z==0 and x>12 and x<23 and y>0 and y<23)
+{
+swim[swimnumber].stop();
+water.stop();
+water.play();
+z++;
+}
+if(z==23)
+{
+fly[flynumber].stop();
+topnumber=random(0, 3);
+top[topnumber].stop();
+top[topnumber].play();
+z--;
+}
+}
+
+void exitgame()
+{
+exit();
+}

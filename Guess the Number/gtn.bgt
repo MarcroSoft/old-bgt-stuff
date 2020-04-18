@@ -1,0 +1,74 @@
+double number;
+string input;
+double guess;
+int answer;
+int error;
+sound speech;
+void main()
+{
+show_game_window("Guess The Number");
+speech.load("sounds/velkommen.ogg");
+speech.play();
+answer=question("Guess The Number", "Velkommen til Guess The Number! Vil du fortsaette?");
+switch(answer)
+{
+case 1:
+speech.load("sounds/instruktioner.ogg");
+speech.play();
+alert("Instruktioner","Om lidt skal du skrive et tal mellem 1 og 10. Det gaelder om at gaette det rigtige tal. Held og lykke!");
+start();
+break;
+case 2:
+speech.load("sounds/afslut.ogg");
+speech.play_wait();
+exit();
+break;
+}
+}
+
+void start()
+{
+number=random(1, 10);
+speech.load("sounds/skriv.ogg");
+speech.play();
+input=input_box("Guess The Number", "Skriv et tal mellem 1 og 10");
+error=get_last_error();
+if(error==-12)
+{
+speech.load("sounds/afslut.ogg");
+speech.play_wait();
+exit();
+}
+guess=string_to_number(input);
+if(guess==number)
+{
+speech.load("sounds/vandt.ogg");
+speech.play();
+
+alert("Guess The Number", "Du vandt! Tillykke!");
+}
+if(guess!=number)
+{
+speech.load("sounds/forkert.ogg");
+speech.play_wait();
+speech.load("sounds/" + number + ".ogg");
+speech.play_wait();
+speech.load("sounds/enter.ogg");
+speech.play();
+alert("Guess The Number", "Det var forkert. Det rigtige nummer var " + number);
+}
+speech.load("sounds/igen.ogg");
+speech.play();
+answer=question("Guess The Number", "Vil du spille igen?");
+switch(answer)
+{
+case 1:
+start();
+break;
+case 2:
+speech.load("sounds/afslut.ogg");
+speech.play_wait();
+exit();
+break;
+}
+}

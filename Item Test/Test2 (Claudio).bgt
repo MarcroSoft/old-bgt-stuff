@@ -1,0 +1,68 @@
+//we define the board and a vector for the player position 
+int[][] board; 
+vector pos(1,1,0);
+tts_voice v;
+
+void main()
+{
+show_game_window("Test Game");
+install_keyhook();
+//we resize the board and place a "1" to mark the objects position 
+create_board();
+main_loop();
+}
+
+void main_loop()
+{
+vector prev;
+while(true)
+{
+prev.x = pos.x;
+prev.y = pos.y;
+
+if(key_down(KEY_LMENU) && key_pressed(KEY_F4))
+{
+exit();
+}
+if (key_pressed(KEY_LEFT) && (pos.x>1)) pos.x--;
+if (key_pressed(KEY_RIGHT) && (pos.x<11)) pos.x++;
+if (key_pressed(KEY_DOWN) && (pos.y>1)) pos.y--;
+if (key_pressed(KEY_UP) && (pos.y<10)) pos.y++;
+if ((pos.x != prev.x)||(pos.y!=prev.y)) v.speak(pos.x + ", " + pos.y); 
+if (key_pressed(KEY_RETURN)) check();
+wait(5);
+}
+}
+
+void check()
+{
+// this function checks the 9 squares around current position for the 1 in the array 
+for (int i = pos.x -1; i <= pos.x+1; i++)
+{
+for (int j = pos.y-1; j <= pos.y+1; j++)
+{
+if (board[i][j] == 1)
+{
+v.speak("¡You found the gold egg!");
+// we remove the 1 from the array 
+board[i][j] = 0;
+return;
+}
+}
+}
+v.speak("Nothing");
+}
+
+void create_board()//>
+{
+board.resize(12);
+for (int lix = 0; lix <12;lix++)
+{
+board[lix].resize(12);
+for (int liy = 0; liy<12; liy++)
+{
+board[lix][liy] = 0; 
+if ((lix == 5)&&(liy==5)) board[lix][liy]=1;
+}
+}
+}

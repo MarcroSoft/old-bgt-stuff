@@ -1,0 +1,85 @@
+#include "sound_pool.bgt"
+
+uint xpos=0;
+uint ypos=0;
+
+sound death;
+
+
+// I would go for a 2d array in this case. if you are wanting to store more than one piece of information for each square such as the ground surface, the object that is lying on that square etc, I recommend using a 2d array of classes. For example, let's say that we have a class called square that is defined like this:
+
+
+class square
+{
+int ground_surface;
+int object_type;
+}
+// We can then make a 2d array with these, like so:
+ square[][] board;
+sound_pool pool;
+void main()
+{
+
+
+// We must, however, loop through and set the dimentions of the array before it can be used, as we currently have an array which is 0 by 0 elements:
+
+board.resize(10);
+for(uint x=0;x<board.length();x++)
+{
+board[x].resize(10);
+}
+
+// This is a little annoying, but you can easily make a wrapper function to do it and at the end of the day, we have an array of classes which can be used like this:
+
+// board[0][0].ground_surface=3;
+// board[9][4].object_type=10;
+
+// And so on. I hope this gives you a good idea of how to proceed.
+
+for(uint x1=0;x1<board.length();x1++)
+{
+for(uint x2=0;x2<board[x1].length();x2++)
+{
+board[x1][x2].ground_surface=0;
+}
+}
+
+death.load("sounds/falldeath.wav");
+show_game_window("Game Board!");
+while(true)
+{
+if(key_pressed(KEY_RIGHT)) move(1);
+if(key_pressed(KEY_LEFT)) move(2);
+if(key_pressed(KEY_UP)) move(3);
+if(key_pressed(KEY_DOWN)) move(4);
+if(key_down(KEY_LMENU)&&key_pressed(KEY_F4)) exit();
+wait(5);
+}
+}
+void move(int dir)
+{
+switch(dir)
+{
+case 1:
+xpos++;
+break;
+case 2:
+xpos--;
+break;
+case 3:
+ypos++;
+break;
+case 4:
+ypos--;
+break;
+}
+if(xpos<0||xpos>board.length()-1||ypos<0||ypos>board[xpos].length()-1)
+{
+death.play_wait();
+exit();
+}
+else
+{
+pool.play_stationary("sounds/stone"+random(1, 4)+".wav", false);
+}
+}
